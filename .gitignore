@@ -1,0 +1,8 @@
+FE/node_modules/
+FE/dist/
+
+__pycache__/
+*.pyc
+
+.env
+*.env
