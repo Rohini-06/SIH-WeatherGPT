@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
 
 app = FastAPI()
 
@@ -107,5 +109,90 @@ async def weather(latitude: float, longitude: float):
         }
 
     except Exception as exc:
+        return {"error": str(exc)}
+    class ChatRequest(BaseModel):
+    question: str
+    location: Optional[str] = ""
+    weather: Optional[Dict[str, Any]] = None
+    messages: Optional[List[Dict[str, str]]] = []
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    try:
+        weather_info = request.weather or {}
+
+        current = weather_info.get("current", {})
+        daily = weather_info.get("daily", {})
+        hourly = weather_info.get("hourly", {})
+
+        prompt = f"""
+You are WeatherGPT, a helpful AI weather assistant.
+
+Location:
+{request.location}
+
+Current Weather:
+{current}
+
+7-Day Forecast:
+{daily}
+
+Hourly Forecast:
+{hourly}
+
+User Question:
+{request.question}
+
+Answer clearly and naturally.
+
+Rules:
+- Use the supplied weather data.
+- Give practical weather advice when relevant.
+- If the user asks about rain, travel, farming, marine conditions,
+  outdoor activities, or safety, answer using the available weather data.
+- Give alerts only when relevant.
+- Do not add unrelated warnings.
+- If the required information is unavailable, say so clearly.
+- Keep the answer concise and easy to understand.
+"""
+
+        ollama_payload = {
+            "model": "llama3.2:3b",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are WeatherGPT, a helpful weather assistant."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "stream": False,
+            "options": {
+                "temperature": 0.4
+            }
+        }
+
+        async with httpx.AsyncClient(timeout=120) as client:
+            response = await client.post(
+                "http://127.0.0.1:11434/api/chat",
+                json=ollama_payload
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+        answer = data.get("message", {}).get(
+            "content",
+            "Sorry, I could not generate a response."
+        )
+
+        return {"answer": answer}
+
+    except Exception as exc:
+        print("AI Error:", str(exc))
         return {"error": str(exc)}
     
