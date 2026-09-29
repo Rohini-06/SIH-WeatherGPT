@@ -887,7 +887,7 @@ function getHourlyQuestionResponse(question, weather, location, language) {
   return `🕐 Next few hours in ${location}:\n${lines.join("\n")}`;
 }
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "https://sih-weathergpt-backend.onrender.com");
 // ============================================================
 // MAIN APP
 // ============================================================

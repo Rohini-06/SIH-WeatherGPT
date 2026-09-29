@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+import os
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
@@ -16,6 +17,7 @@ app.add_middleware(
 
 OPEN_METEO_GEO = "https://geocoding-api.open-meteo.com/v1/search"
 OPEN_METEO_WEATHER = "https://api.open-meteo.com/v1/forecast"
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
 
 
 @app.get("/")
@@ -177,7 +179,7 @@ Rules:
 
         async with httpx.AsyncClient(timeout=120) as client:
             response = await client.post(
-                "http://127.0.0.1:11434/api/chat",
+                f"{OLLAMA_BASE_URL}/api/chat",
                 json=ollama_payload
             )
 
