@@ -887,7 +887,7 @@ function getHourlyQuestionResponse(question, weather, location, language) {
   return `🕐 Next few hours in ${location}:\n${lines.join("\n")}`;
 }
 
-const API_BASE_URL = "https://weathergpt-backend-201b.onrender.com";
+const API_BASE_URL = "https://sih-weathergpt-backend.onrender.com/";
 // ============================================================
 // MAIN APP
 // ============================================================
