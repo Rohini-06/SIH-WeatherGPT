@@ -887,7 +887,7 @@ function getHourlyQuestionResponse(question, weather, location, language) {
   return `🕐 Next few hours in ${location}:\n${lines.join("\n")}`;
 }
 
-const API_BASE_URL = "https://sih-weathergpt-backend.onrender.com/";
+const API_BASE_URL = "http://127.0.0.1:8000";
 // ============================================================
 // MAIN APP
 // ============================================================
@@ -2035,10 +2035,9 @@ WEATHER ALERT RULES:
 
                   <h2>
 
-                    {Math.round(
-                      weather.current
-                        .temperature_2m
-                    )}
+                    {weather?.current?.temperature_2m != null
+  ? Math.round(weather.current.temperature_2m)
+  : "--"}
                     °C
 
                   </h2>
