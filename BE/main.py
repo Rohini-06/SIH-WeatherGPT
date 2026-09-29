@@ -110,7 +110,7 @@ async def weather(latitude: float, longitude: float):
 
     except Exception as exc:
         return {"error": str(exc)}
-   class ChatRequest(BaseModel):
+class ChatRequest(BaseModel):
     question: str
     location: Optional[str] = ""
     weather: Optional[Dict[str, Any]] = None
